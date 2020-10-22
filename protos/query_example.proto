@@ -1,0 +1,22 @@
+syntax = "proto3";
+
+message ContactReq {
+    string name = 1;
+    string phone = 2;
+}
+
+message ContactRes {
+    int32 id = 1;
+    string addr = 2;
+    message Contact {
+        string name = 1;
+        string phone = 2;
+    }
+    repeated Contact contact = 3;
+}
+
+
+service QueryService {
+    rpc ContactSearch (ContactReq) returns (ContactRes);
+}
+
