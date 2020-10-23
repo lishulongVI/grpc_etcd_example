@@ -29,6 +29,12 @@
 ## Etcd
 
 1. pip install etcd3
+2. docker-compose up
+3. http://127.0.0.1:8010/，修改下面红框的地址用来进行etcd的服务链接
+
+![image-20201023104717549](image-20201023104717549.png)
+
+
 
 
 
@@ -38,5 +44,6 @@
 
 1. https://github.com/kragniz/python-etcd3,https://pypi.org/project/etcd3/
 2. https://grpc.io/docs/languages/python/quickstart/
-3. 
+3. https://github.com/evildecay/etcdkeeper
+4. https://github.com/lishulongVI/script-book/blob/release/etcd-docker-compose.yml
 

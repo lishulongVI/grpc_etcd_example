@@ -1,7 +1,10 @@
 import grpc
+import threading
+import time
 from concurrent import futures
 from protos import query_example_pb2_grpc
 from protos import query_example_pb2
+from src.etcd_service import EtcdService
 
 
 class ContactService(query_example_pb2_grpc.QueryService):
@@ -15,6 +18,18 @@ class ContactService(query_example_pb2_grpc.QueryService):
         ])
 
 
+class Register(threading.Thread):
+
+    def __init__(self, stop=0):
+        super().__init__()
+        self.stop = stop
+
+    def run(self) -> None:
+        while 1 and self.stop == 0:
+            time.sleep(1)
+            EtcdService.register("/be-host/query_service", 'localhost:3600')
+
+
 def server():
     server = grpc.server(futures.ThreadPoolExecutor(max_workers=100), options=[
         ('grpc.max_send_message_length', 1024 * 1024 * 1024),
@@ -24,11 +39,16 @@ def server():
     query_example_pb2_grpc.add_QueryServiceServicer_to_server(ContactService(), server)
     server.add_insecure_port('[::]:3600')
     server.start()
+    r = Register()
+    r.start()
     try:
-        import time
         while 1:
             time.sleep(3600)
     except KeyboardInterrupt:
+        r.stop = 1
+        # 保证线程执行结束了
+        time.sleep(1)
+        EtcdService.un_register("/be-host/query_service")
         server.stop(0)
 
 
